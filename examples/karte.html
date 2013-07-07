@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+
+	<div class="tools">
+		<input type="button" name="draw" value="draw"/>
+		<input type="button" name="erase" value="erase"/>
+		<input type="button" name="load" value="load"/>
+		<input type="button" name="download" value="download"/>
+		<input type="button" name="clear" value="clear"/>
+		<input type="text" name="color" value="#ff0000"/>
+		<input type="button" name="setColor" value="set color"/>
+		<input type="button" name="undo" value="undo"/>
+		<input type="button" name="redo" value="redo"/>
+		<input type="button" name="enable" value="enable"/>
+		<input type="button" name="disable" value="disable"/>
+	</div>
+
+	<canvas id="target" width="636" height="959" style="background: url(karte.jpg) no-repeat; background-size: 636px 959px;"></canvas>
+
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="../board.js"></script>
+	<script>
+		$(function() {
+			var board = $('#target').board({autoSave: true});
+
+			$('[name=enable]').click(function() {
+				board.enable();
+			});
+			$('[name=disable]').click(function() {
+				board.disable();
+			});
+			$('[name=draw]').click(function() {
+				board.setDrawMode();
+			});
+			$('[name=erase]').click(function() {
+				board.setEraseMode();
+			});
+			$('[name=load]').click(function() {
+				board.autoLoad();
+			});
+			$('[name=download]').click(function() {
+				location.href = board.toDataURL();
+			});
+			$('[name=clear]').click(function() {
+				board.clear();
+			});
+			$('[name=setColor]').click(function() {
+				board.setDrawColor($('[name=color]').val());
+			});
+			$('[name=undo]').click(function() {
+				board.undo();
+			});
+			$('[name=redo]').click(function() {
+				board.redo();
+			});
+
+		});
+	</script>
+
+</body>
+</html>
