@@ -149,8 +149,10 @@
 			if (this.options.autoSave && localStorage) {
 				var data = localStorage.getItem('board-data');
 				if (data) {
-					this.addStates(data);
-					return this.drawData(data);
+					this.drawData(data).done((function() {
+						this.addStates(data);
+						deferred.resolve();
+					}).bind(this));
 				}
 			}
 
