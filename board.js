@@ -146,6 +146,8 @@
 		},
 
 		autoLoad: function() {
+			var deferred = $.Deferred();
+
 			if (this.options.autoSave && localStorage) {
 				var data = localStorage.getItem('board-data');
 				if (data) {
@@ -153,10 +155,14 @@
 						this.addStates(data);
 						deferred.resolve();
 					}).bind(this));
+				} else {
+					deferred.resolve();
 				}
+			} else {
+				deferred.resolve();
 			}
 
-			return $.Deferred().resolve();
+			return deferred.promise();
 		},
 
 		autoSave: function() {
