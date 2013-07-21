@@ -1,4 +1,4 @@
-(function($) {
+;(function($) {
 
 	$.fn.extend({
 		board: function(options) {
@@ -10,7 +10,7 @@
 
 	var Board = function($canvas, options) {
 		this.init($canvas, options);
-		this.autoLoad().done((function() {
+		this.initLoad().done((function() {
 			this.onEvents();	
 		}).bind(this));
 	};
@@ -125,6 +125,7 @@
 			this.oldX = x;
 			this.oldY = y;
 		},
+		
 		drawData: function(data) {
 			var deferred = $.Deferred(),
 				context = this.getContext(),
@@ -145,10 +146,16 @@
 			this.getContext().clearRect(0, 0, this.$canvas.width(), this.$canvas.height());
 		},
 
-		autoLoad: function() {
+		initLoad: function() {
 			var deferred = $.Deferred();
-
-			if (this.options.autoSave && localStorage) {
+			
+			if (this.options.data) {
+				var data = this.options.data;
+				this.drawData(data).done((function() {
+					this.addStates(data);
+					deferred.resolve();
+				}).bind(this));
+			} else if (this.options.autoSave && localStorage) {
 				var data = localStorage.getItem('board-data');
 				if (data) {
 					this.drawData(data).done((function() {
