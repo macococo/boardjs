@@ -23,6 +23,7 @@
 	<canvas id="target" width="636" height="959" style="background: url(karte.jpg) no-repeat; background-size: 636px 959px;"></canvas>
 
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="../lodash.underscore.min.js"></script>
 	<script src="../board.js"></script>
 	<script>
 		$(function() {
@@ -50,7 +51,7 @@
 				board.clear();
 			});
 			$('[name=setColor]').click(function() {
-				board.setDrawColor($('[name=color]').val());
+				board.setDrawStrokeStyle($('[name=color]').val());
 			});
 			$('[name=undo]').click(function() {
 				board.undo();

@@ -1,4 +1,4 @@
-;(function($) {
+;(function(window, $) {
 
 	$.fn.extend({
 		board: function(options) {
@@ -10,10 +10,14 @@
 
 	var Board = function($canvas, options) {
 		this.init($canvas, options);
-		this.initLoad().done((function() {
-			this.onEvents();	
-		}).bind(this));
+		this.initLoad().done(_.bind(function() {
+			this.onEvents();
+		}, this));
 	};
+
+	var eventNames = (window.ontouchstart !== undefined) ?
+		{start: 'touchstart', end: 'touchend', move: 'touchmove'} :
+		{start: 'mousedown', end: 'mouseup', move: 'mousemove'};
 
 	Board.prototype = {
 
@@ -28,7 +32,7 @@
 			this.oldY = 0;
 
 			options.autoSave = !!options.autoSave;
-			options.drawStrokeStyle = options.drawStrokeStyle || 'rgba(255, 0, 0, 1)';
+			options.drawStrokeStyle = options.drawStrokeStyle || '#000000';
 			options.drawLineWidth = options.drawLineWidth || 5;
 			options.eraseStrokeStyle = options.eraseStrokeStyle || 'rgba(0, 0, 0, 0)';
 			options.eraseLineWidth = options.eraseLineWidth || 10;
@@ -60,8 +64,16 @@
 			this.drawMode = 2;
 		},
 
-		setDrawColor: function(color) {
-			this.options.drawStrokeStyle = color;
+		setDrawStrokeStyle: function(style) {
+			this.options.drawStrokeStyle = style;
+		},
+
+		setDrawLineWidth: function(width) {
+			this.options.drawLineWidth = width;
+		},
+
+		setEraseLineWidth: function(width) {
+			this.options.eraseLineWidth = width;
 		},
 
 		toDataURL: function(type) {
@@ -74,21 +86,21 @@
 		},
 
 		onEvents: function() {
-			this.$canvas.on('touchstart', (function(e) {
-				e = e.originalEvent.changedTouches[0];
+			this.$canvas.on(eventNames.start, _.bind(function(e) {
+				e = (e.originalEvent.changedTouches) ? e.originalEvent.changedTouches[0] : e.originalEvent;
 				var offset = this.$canvas.offset();
 				this.drawing = true;
 				this.oldX = e.pageX - offset.left;
 				this.oldY = e.pageY - offset.top;
-			}).bind(this));
-			this.$canvas.on('touchend', (function(e) {
+			}, this));
+			this.$canvas.on(eventNames.end, _.bind(function(e) {
 				this.drawing = false;
 				this.addStates(this.toDataURL());
-			}).bind(this));
-			this.$canvas.on('touchmove', (function(e) {
+			}, this));
+			this.$canvas.on(eventNames.move, _.bind(function(e) {
 				this.drawLine(e);
 				return false;
-			}).bind(this));
+			}, this));
 		},
 
 		offEvents: function() {
@@ -98,7 +110,7 @@
 		drawLine: function(e) {
 			if (!this.drawing) return;
 
-			e = e.originalEvent.changedTouches[0];
+			e = (e.originalEvent.changedTouches) ? e.originalEvent.changedTouches[0] : e.originalEvent;
 			var offset = this.$canvas.offset(),
 				x = e.pageX - offset.left,
 				y = e.pageY - offset.top,
@@ -125,7 +137,7 @@
 			this.oldX = x;
 			this.oldY = y;
 		},
-		
+
 		drawData: function(data) {
 			var deferred = $.Deferred(),
 				context = this.getContext(),
@@ -148,20 +160,20 @@
 
 		initLoad: function() {
 			var deferred = $.Deferred();
-			
+
 			if (this.options.data) {
 				var data = this.options.data;
-				this.drawData(data).done((function() {
+				this.drawData(data).done(_.bind(function() {
 					this.addStates(data);
 					deferred.resolve();
-				}).bind(this));
+				}, this));
 			} else if (this.options.autoSave && localStorage) {
 				var data = localStorage.getItem('board-data');
 				if (data) {
-					this.drawData(data).done((function() {
+					this.drawData(data).done(_.bind(function() {
 						this.addStates(data);
 						deferred.resolve();
-					}).bind(this));
+					}, this));
 				} else {
 					deferred.resolve();
 				}
@@ -212,4 +224,4 @@
 		}
 	}
 
-})(jQuery);
+})(window, jQuery);
