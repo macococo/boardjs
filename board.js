@@ -25,6 +25,7 @@
 			this.$canvas = $canvas;
 			this.canvas = this.$canvas.get(0);
 			this.options = options = options || {};
+			this.changed = false;
 			this.states = [];
 			this.statesIndex = 0;
 			this.drawMode = 1;
@@ -76,6 +77,19 @@
 			this.options.eraseLineWidth = width;
 		},
 
+		isDrew: function() {
+			var drew = false;
+			var date = new Date();
+			$(this.getContext().getImageData(0, 0, this.$canvas.width(), this.$canvas.height()).data).each(function() {
+				if (this > 0) {
+					drew = true;
+					return false;
+				}
+			});
+			console.log(new Date() - date);
+			return drew;
+		},
+
 		toDataURL: function(type) {
 			return this.canvas.toDataURL(type || 'image/png');
 		},
@@ -109,6 +123,8 @@
 
 		drawLine: function(e) {
 			if (!this.drawing) return;
+
+			this.changed = true;
 
 			e = (e.originalEvent.changedTouches) ? e.originalEvent.changedTouches[0] : e.originalEvent;
 			var offset = this.$canvas.offset(),
