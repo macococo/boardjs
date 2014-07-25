@@ -35,7 +35,6 @@
 			options.autoSave = !!options.autoSave;
 			options.drawStrokeStyle = options.drawStrokeStyle || '#000000';
 			options.drawLineWidth = options.drawLineWidth || 5;
-			options.eraseStrokeStyle = options.eraseStrokeStyle || 'rgba(0, 0, 0, 0)';
 			options.eraseLineWidth = options.eraseLineWidth || 10;
 		},
 
@@ -134,14 +133,14 @@
 
 			context.lineJoin = 'round';
 			context.lineCap = 'round';
-			context.globalCompositeOperation = 'copy';
+			context.strokeStyle = this.options.drawStrokeStyle;
 
 			if (this.drawMode === 2) {
-				context.strokeStyle = this.options.eraseStrokeStyle;
 				context.lineWidth = this.options.eraseLineWidth;
+				context.globalCompositeOperation = 'destination-out';
 			} else {
-				context.strokeStyle = this.options.drawStrokeStyle;
 				context.lineWidth = this.options.drawLineWidth;
+				context.globalCompositeOperation = 'source-over';
 			}
 
 			context.beginPath();
